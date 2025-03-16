@@ -11,12 +11,20 @@ protocol Factory: AnyObject {
 }
 
 final class ProductsFactory: Factory {
+    
     static func make() -> UIViewController {
         
         let model = ProductsModel(name: "Hello", countTransaction: 10)
-        let view = ProductsViewController()
-        let presenter = ProductsPresenter(view: view, productsModel: model)
-        view.presenter = presenter
-        return view
+        
+        let router = ProductsRouter()
+        
+        let presenter = ProductsPresenter(model: model, router: router)
+        
+        let vc = ProductsViewController(presenter: presenter)
+        
+        presenter.view = vc
+        router.setRootViewController(root: vc)
+        
+        return vc
     }
 }
