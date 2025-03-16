@@ -14,7 +14,10 @@ final class ProductsFactory: Factory {
     
     static func make() -> UIViewController {
         
-        let model = ProductsModel(name: "Hello", countTransaction: 10)
+        var service = RestService().loadProductsFromPlist()
+        print(service ?? "")
+        
+        let model = ProductsModel(amount: "", currency: "", sku: "")
         
         let router = ProductsRouter()
         
