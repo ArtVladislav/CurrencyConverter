@@ -6,19 +6,14 @@
 //
 import UIKit
 
-final class ProductsView: UIView {
+final class ProductsView: UIView, UITableViewDelegate, UITableViewDataSource {
     
-    private lazy var productsLabel: UILabel = {
-        let label = UILabel()
-        label.text = "..."
-        label.font.withSize(20)
-        return label
-    }()
-    
+    private var tableView: UITableView
     private let presenter: ProductsPresenterProtocol
     
     init(presenter: ProductsPresenterProtocol) {
         self.presenter = presenter
+        self.tableView = UITableView()
         super.init(frame: .zero)
         commonInit()
     }
@@ -27,28 +22,44 @@ final class ProductsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 20
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ProductsCell.cellId, for: indexPath) as? ProductsCell else { return UITableViewCell() }
+        return cell
+    }
+    
     func update(model: ProductsModel) {
-        productsLabel.text = model.name
+        
     }
 }
 
-private extension ProductsView {
+extension ProductsView {
     
     func commonInit() {
         backgroundColor = .systemCyan
-        setupSubviews()
+        setupTableView()
         setupConstraints()
     }
     
-    func setupSubviews() {
-        addSubview(productsLabel)
+    func setupTableView() {
+        tableView.backgroundColor = .systemCyan
+        addSubview(tableView)
+        tableView.register(ProductsCell.self, forCellReuseIdentifier: ProductsCell.cellId)
+        tableView.delegate = self
+        tableView.dataSource = self
     }
     
     func setupConstraints() {
-        productsLabel.translatesAutoresizingMaskIntoConstraints = false
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            productsLabel.topAnchor.constraint(equalTo: topAnchor, constant: 150),
-            productsLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 30)
+            tableView.topAnchor.constraint(equalTo: topAnchor, constant: 60),
+            tableView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
+            tableView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
+            tableView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -30)
         ])
     }
+    
 }

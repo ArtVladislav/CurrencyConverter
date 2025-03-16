@@ -6,6 +6,7 @@
 //
 
 struct ProductsModel {
-    let name: String
-    let countTransaction: Int
+    let amount: String
+    let currency: String
+    let sku: String
 }
