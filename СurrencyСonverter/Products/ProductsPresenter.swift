@@ -6,21 +6,23 @@
 //
 
 protocol ProductsPresenterProtocol: AnyObject {
-    init(view: ProductsViewProtocol, productsModel: ProductsModel)
-    func showProducts()
+    init(model: ProductsModel, router: ProductsRouterProtocol)
+    func viewDidLoad()
 }
 
 final class ProductsPresenter: ProductsPresenterProtocol {
     
-    let view: ProductsViewProtocol
-    let productsModel: ProductsModel
+    weak var view: ProductsViewProtocol?
     
-    init(view: ProductsViewProtocol, productsModel: ProductsModel) {
-        self.productsModel = productsModel
-        self.view = view
+    private let model: ProductsModel
+    private let router: ProductsRouterProtocol
+    
+    init(model: ProductsModel, router: ProductsRouterProtocol) {
+        self.model = model
+        self.router = router
     }
     
-    func showProducts() {
-        self.view.setItems(productsModel)
+    func viewDidLoad() {
+        view?.update(model: model)
     }
 }
