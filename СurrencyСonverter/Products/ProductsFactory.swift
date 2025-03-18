@@ -7,21 +7,18 @@
 import UIKit
 
 protocol Factory: AnyObject {
-    static func make() -> UIViewController
+    func make() -> UIViewController
 }
 
 final class ProductsFactory: Factory {
     
-    static func make() -> UIViewController {
+    func make() -> UIViewController {
         
-        var service = RestService().loadProductsFromPlist()
-        print(service ?? "")
+        let service = RestService()
         
-        let model = ProductsModel(amount: "", currency: "", sku: "")
+        let router = ProductsRouter(factory: TransactionsFactory())
         
-        let router = ProductsRouter()
-        
-        let presenter = ProductsPresenter(model: model, router: router)
+        let presenter = ProductsPresenter(service: service, router: router)
         
         let vc = ProductsViewController(presenter: presenter)
         

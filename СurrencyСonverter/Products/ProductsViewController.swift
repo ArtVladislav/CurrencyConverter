@@ -8,7 +8,7 @@
 import UIKit
 
 protocol ProductsViewProtocol: AnyObject {
-    func update(model: ProductsModel)
+    func update(model: [ProductsModel])
 }
 
 final class ProductsViewController: UIViewController {
@@ -31,12 +31,15 @@ final class ProductsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = presenter.title
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+        navigationController?.navigationBar.barTintColor = .white
         presenter.viewDidLoad()
     }
 }
 
 extension ProductsViewController: ProductsViewProtocol {
-    func update(model: ProductsModel) {
+    func update(model: [ProductsModel]) {
         prodactView.update(model: model)
     }
 }

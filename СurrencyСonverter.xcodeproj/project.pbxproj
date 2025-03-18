@@ -6,8 +6,15 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2FDE73402D87861A0099229C /* transactions.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2FDE733F2D87861A0099229C /* transactions.plist */; };
+		2FDE73412D87861A0099229C /* rates.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2FDE733E2D87861A0099229C /* rates.plist */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		2FB0BFFD2D86E9360003F12F /* СurrencyСonverter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "СurrencyСonverter.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2FDE733E2D87861A0099229C /* rates.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = rates.plist; sourceTree = "<group>"; };
+		2FDE733F2D87861A0099229C /* transactions.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = transactions.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -47,6 +54,8 @@
 			children = (
 				2FB0BFFF2D86E9360003F12F /* СurrencyСonverter */,
 				2FB0BFFE2D86E9360003F12F /* Products */,
+				2FDE733E2D87861A0099229C /* rates.plist */,
+				2FDE733F2D87861A0099229C /* transactions.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -122,6 +131,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2FDE73402D87861A0099229C /* transactions.plist in Resources */,
+				2FDE73412D87861A0099229C /* rates.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
