@@ -6,7 +6,12 @@
 //
 
 struct ProductsModel {
-    let amount: String
-    let currency: String
     let sku: String
+    let transactions: [(currency: String, amount: Double)]
+}
+
+struct TransactionsModel {
+    let currency: String
+    let amount: Double
+    let convertedGBP: Double
 }
