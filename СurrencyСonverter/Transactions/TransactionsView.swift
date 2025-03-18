@@ -11,6 +11,7 @@ final class TransactionsView: UIView, UITableViewDelegate, UITableViewDataSource
     private let tableView: UITableView
     private let presenter: TransactionsPresenterProtocol
     private var model: [TransactionsModel]?
+    private var activityIndicator: UIActivityIndicatorView!
 
     init(presenter: TransactionsPresenterProtocol){
         self.presenter = presenter
@@ -21,6 +22,10 @@ final class TransactionsView: UIView, UITableViewDelegate, UITableViewDataSource
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        activityIndicator.center = CGPoint(x: bounds.midX, y: bounds.midY)
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -63,17 +68,33 @@ final class TransactionsView: UIView, UITableViewDelegate, UITableViewDataSource
             self.tableView.reloadData()
         }
     }
+    
+    func startLoader() {
+        activityIndicator.startAnimating()
+    }
+    
+    func stopLoader() {
+        activityIndicator.stopAnimating()
+    }
 }
 
 extension TransactionsView {
     
-    func commonInit() {
+    private func commonInit() {
         backgroundColor = .white
         setupTableView()
         setupConstraints()
+        setupIndicator()
     }
     
-    func setupTableView() {
+    private func setupIndicator(){
+        activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.color = .gray
+        activityIndicator.hidesWhenStopped = true
+        addSubview(activityIndicator)
+    }
+    
+    private func setupTableView() {
         tableView.backgroundColor = .white
         tableView.rowHeight = 50
         tableView.allowsSelection = false
@@ -83,7 +104,7 @@ extension TransactionsView {
         tableView.dataSource = self
     }
     
-    func setupConstraints() {
+    private func setupConstraints() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: topAnchor),

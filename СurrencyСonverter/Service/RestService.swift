@@ -4,55 +4,44 @@
 //
 //  Created by Владислав Артюхов on 17.03.2025.
 //
+
 import UIKit
 
 protocol RestServiceProtocol {
-    func requestData(completion: @escaping (Result<String, Error>) -> ())
+    func loadProductsFromPlist(completion: @escaping (Result<[ProductsModel], CustomError>) -> ())
+    func getConvert(with model: ProductsModel, completion: @escaping (Result<[TransactionsModel], CustomError>) -> ())
+    var fileNameTransactions: String { get }
+    var fileNameRates: String { get }
 }
 
 final class RestService: RestServiceProtocol {
-    func requestData(completion: @escaping (Result<String, Error>) -> ()) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            completion(.success("Hello world"))
-        }
-    }
-}
-
-extension RestService {
-    struct Rate {
-        let from: String
-        let to: String
-        let rate: Double
-    }
-
-    func getSum(model: [TransactionsModel]) -> Double {
-        let sum = model.map { $0.convertedGBP }.reduce(0, +)
-        return sum
-    }
     
-    func getConvert(with model: ProductsModel, completion: @escaping ([TransactionsModel]?) -> Void) {
+    var fileNameTransactions: String { "transactions" }
+    var fileNameRates: String { "rates" }
+    
+    func getConvert(with model: ProductsModel, completion: @escaping (Result<[TransactionsModel], CustomError>) -> ()) {
         DispatchQueue.global(qos: .userInitiated).async {
             guard let rates = self.loadRatesFromPlist() else {
                 DispatchQueue.main.async {
-                    completion(nil)
+                    completion(.failure(.calculationError))
                 }
                 return
             }
             let ratesDict = self.createRatesDictionary(from: rates)
             let transactions = self.convertCurrency(with: model, ratesDict: ratesDict)
-            DispatchQueue.main.async {
-                completion(transactions)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                completion(.success(transactions))
             }
         }
     }
     
-    func loadProductsFromPlist(completion: @escaping ([ProductsModel]?) -> Void) {
+    func loadProductsFromPlist(completion: @escaping (Result<[ProductsModel], CustomError>) -> ()) {
         DispatchQueue.global(qos: .userInitiated).async {
-            guard let path = Bundle.main.path(forResource: "transactions", ofType: "plist"),
+            guard let path = Bundle.main.path(forResource: self.fileNameTransactions, ofType: "plist"),
                   let plistData = FileManager.default.contents(atPath: path),
                   let plistArray = try? PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [[String: String]] else {
                 DispatchQueue.main.async {
-                    completion(nil)
+                    completion(.failure(.failedToLoadDataFromFile))
                 }
                 return
             }
@@ -81,14 +70,22 @@ extension RestService {
             // Сортируем массив моделей по sku
             let sortedProducts = products.sorted { $0.sku < $1.sku }
             
-            DispatchQueue.global(qos: .userInitiated).async {
-                completion(sortedProducts)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                completion(.success(sortedProducts))
             }
         }
     }
+}
+
+extension RestService {
+
+    func getSum(model: [TransactionsModel]) -> Double {
+        let sum = model.map { $0.convertedGBP }.reduce(0, +)
+        return sum
+    }
     
     private func loadRatesFromPlist() -> [Rate]? {
-        guard let path = Bundle.main.path(forResource: "rates", ofType: "plist"),
+        guard let path = Bundle.main.path(forResource: self.fileNameRates, ofType: "plist"),
               let plistData = FileManager.default.contents(atPath: path),
               let plistArray = try? PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [[String: Any]] else {
             return nil

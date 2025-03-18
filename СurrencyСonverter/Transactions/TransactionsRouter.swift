@@ -7,7 +7,7 @@
 import UIKit
 
 protocol TransactionsRouterProtocol: AnyObject{
-    
+
 }
 
 final class TransactionsRouter: TransactionsRouterProtocol {
@@ -17,4 +17,5 @@ final class TransactionsRouter: TransactionsRouterProtocol {
     func setRootViewController(root: UIViewController) {
         self.root = root
     }
+
 }

@@ -4,6 +4,7 @@
 //
 //  Created by Владислав Артюхов on 17.03.2025.
 //
+import UIKit
 protocol TransactionsPresenterProtocol: AnyObject {
     var title: String { get }
     init(service: RestService, router: TransactionsRouterProtocol, model: ProductsModel)
@@ -27,11 +28,18 @@ final class TransactionsPresenter: TransactionsPresenterProtocol {
     }
     
     func viewDidLoad() {
-        service.getConvert(with: model, completion: { model in
-            guard let model = model else { return }
-            self.view?.update(with: model)
-        })
-        
+        view?.startLoader()
+        service.getConvert(with: model) { [weak self] result in
+                guard let self else { return }
+                self.view?.stopLoader()
+                
+                switch result {
+                case .success(let model):
+                    self.view?.update(with: model)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+        }
     }
     
     func getSum(model: [TransactionsModel]) -> Double {

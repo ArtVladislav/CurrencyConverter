@@ -9,6 +9,8 @@ import UIKit
 
 protocol TransactionsViewProtocol: AnyObject {
     func update(with model: [TransactionsModel])
+    func startLoader()
+    func stopLoader()
 }
 
 class TransactionsViewController: UIViewController {
@@ -37,9 +39,21 @@ class TransactionsViewController: UIViewController {
         presenter.viewDidLoad()
     }
     
+    deinit {
+        print(">>> TransactionsController is Deinit")
+    }
 }
 
 extension TransactionsViewController: TransactionsViewProtocol {
+    
+    func startLoader() {
+        transactionsView.startLoader()
+    }
+    
+    func stopLoader() {
+        transactionsView.stopLoader()
+    }
+    
     func update(with model: [TransactionsModel]) {
         transactionsView.update(with: model)
     }

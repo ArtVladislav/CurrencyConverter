@@ -26,10 +26,19 @@ final class ProductsPresenter: ProductsPresenterProtocol {
     }
     
     func viewDidLoad() {
-        service.loadProductsFromPlist { [weak self] model in
+        view?.startLoader()
+        service.loadProductsFromPlist { [weak self] result in
+
             guard let self else { return }
-            guard let model = model else { return }
-            self.view?.update(model: model)
+            self.view?.stopLoader()
+            
+            switch result {
+            case .success(let model):
+                self.view?.update(model: model)
+            case .failure(let error):
+                self.router.showError(message: error.localizedDescription)
+            }
+                
         }
     }
     
