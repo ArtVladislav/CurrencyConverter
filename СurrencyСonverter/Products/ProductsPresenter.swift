@@ -6,23 +6,34 @@
 //
 
 protocol ProductsPresenterProtocol: AnyObject {
-    init(model: ProductsModel, router: ProductsRouterProtocol)
+    var title: String { get }
+    init(service: RestService, router: ProductsRouterProtocol)
     func viewDidLoad()
+    func tapCell(with model: ProductsModel)
 }
 
 final class ProductsPresenter: ProductsPresenterProtocol {
     
+    var title: String { "Products" }
     weak var view: ProductsViewProtocol?
     
-    private let model: ProductsModel
+    private let service: RestService
     private let router: ProductsRouterProtocol
     
-    init(model: ProductsModel, router: ProductsRouterProtocol) {
-        self.model = model
+    init(service: RestService, router: ProductsRouterProtocol) {
+        self.service = service
         self.router = router
     }
     
     func viewDidLoad() {
-        view?.update(model: model)
+        service.loadProductsFromPlist { [weak self] model in
+            guard let self else { return }
+            guard let model = model else { return }
+            self.view?.update(model: model)
+        }
+    }
+    
+    func tapCell(with model: ProductsModel) {
+        router.openTransactions(with: model)
     }
 }

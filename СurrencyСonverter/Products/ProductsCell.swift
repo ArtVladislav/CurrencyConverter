@@ -9,21 +9,22 @@ import UIKit
 
 class ProductsCell: UITableViewCell {
     static let cellId = "ProductsCell"
-//    private let model: ProductsModel?
     
     private lazy var skuLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
-        label.text = "sku"
-        label.font = .systemFont(ofSize: 21, weight: .medium)
+        label.text = "A0000"
+        label.font = .systemFont(ofSize: 17, weight: .medium)
+        label.backgroundColor = .clear
         return label
     }()
     
-    private lazy var amountLabel: UILabel = {
+    private lazy var transactionsLabel: UILabel = {
         let label = UILabel()
         label.textColor = .gray
-        label.text = "amount " + "transactions  " + ">"
-        label.font = .systemFont(ofSize: 20, weight: .medium)
+        label.attributedText = getMaskText(with: ProductsModel(sku: "A0000", transactions: []))
+        label.font = .systemFont(ofSize: 17, weight: .medium)
+        label.backgroundColor = .clear
         return label
     }()
     
@@ -42,32 +43,55 @@ class ProductsCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        if selected {
-            contentView.backgroundColor = .cyan
-        } else {
-            contentView.backgroundColor = .clear
-        }
+        
+        let bgColor = selected ? UIColor.lightGray : UIColor.white
+        contentView.backgroundColor = bgColor
+    }
+
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        super.setHighlighted(highlighted, animated: animated)
+        
+        let bgColor = highlighted ? UIColor.lightGray : UIColor.white
+        contentView.backgroundColor = bgColor
     }
     
-    func commonInit() {
-        backgroundColor = .clear
+    func configure(with model: ProductsModel) {
+        transactionsLabel.attributedText = getMaskText(with: model)
+        skuLabel.text = model.sku
+    }
+    
+    private func getMaskText(with model: ProductsModel) -> NSAttributedString {
+        let arrow = UIImage(systemName: "chevron.right")?.withTintColor(.gray, renderingMode: .alwaysOriginal)
+        let attachment = NSTextAttachment()
+        attachment.image = arrow
+        attachment.bounds = CGRect(x: 0, y: -2, width: 10, height: 15)
+        let attributedText = NSMutableAttributedString(string: String(model.transactions.count) + " transactions  ")
+        attributedText.append(NSAttributedString(attachment: attachment))
+        return attributedText
+    }
+    
+    private func commonInit() {
+        backgroundColor = .white
+        contentView.backgroundColor = .white
+        tintColor = .white
+        
         setupSubviews()
         setupConstraint()
     }
     
-    func setupSubviews() {
+    private func setupSubviews() {
         contentView.addSubview(skuLabel)
-        contentView.addSubview(amountLabel)
+        contentView.addSubview(transactionsLabel)
     }
     
-    func setupConstraint() {
+    private func setupConstraint() {
         skuLabel.translatesAutoresizingMaskIntoConstraints = false
-        amountLabel.translatesAutoresizingMaskIntoConstraints = false
+        transactionsLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             skuLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
-            skuLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            amountLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
-            amountLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20)
+            skuLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            transactionsLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            transactionsLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20)
         ])
     }
     
