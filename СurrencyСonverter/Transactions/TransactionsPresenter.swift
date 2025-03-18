@@ -37,7 +37,7 @@ final class TransactionsPresenter: TransactionsPresenterProtocol {
                 case .success(let model):
                     self.view?.update(with: model)
                 case .failure(let error):
-                    print(error.localizedDescription)
+                    router.showError(message: error.localizedDescription)
                 }
         }
     }
@@ -45,6 +45,4 @@ final class TransactionsPresenter: TransactionsPresenterProtocol {
     func getSum(model: [TransactionsModel]) -> Double {
         return service.getSum(model: model)
     }
-    
-    
 }

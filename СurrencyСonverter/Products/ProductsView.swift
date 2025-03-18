@@ -46,13 +46,6 @@ final class ProductsView: UIView, UITableViewDelegate, UITableViewDataSource {
         cell.configure(with: model[indexPath.row])
         return cell
     }
-    func showError() {
-        //
-    }
-    
-    func showEmpty() {
-        //
-    }
     
     func startLoader() {
         activityIndicator.startAnimating()
