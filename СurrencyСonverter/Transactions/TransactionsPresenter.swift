@@ -29,7 +29,7 @@ final class TransactionsPresenter: TransactionsPresenterProtocol {
     
     func viewDidLoad() {
         view?.startLoader()
-        service.getConvert(with: model) { [weak self] result in
+        service.getAllTransactions(with: model) { [weak self] result in
                 guard let self else { return }
                 self.view?.stopLoader()
                 

@@ -23,7 +23,7 @@ class ProductsCell: UITableViewCell {
     private lazy var transactionsLabel: UILabel = {
         let label = UILabel()
         label.textColor = .gray
-        label.attributedText = getMaskText(with: ProductsModel(sku: "A0000", transactions: []))
+        label.attributedText = .none
         label.font = .systemFont(ofSize: 17, weight: .medium)
         label.backgroundColor = .clear
         return label
@@ -66,7 +66,7 @@ class ProductsCell: UITableViewCell {
         let attachment = NSTextAttachment()
         attachment.image = arrow
         attachment.bounds = CGRect(x: 0, y: -2, width: 10, height: 15)
-        let attributedText = NSMutableAttributedString(string: String(model.transactions.count) + " transactions  ")
+        let attributedText = NSMutableAttributedString(string: String(model.arrayTransactions.count) + " transactions  ")
         attributedText.append(NSAttributedString(attachment: attachment))
         return attributedText
     }
