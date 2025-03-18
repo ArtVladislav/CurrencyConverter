@@ -8,6 +8,7 @@
 import UIKit
 
 class TransactionsCell: UITableViewCell {
+    
     static let cellId = "TransactionsCell"
     
     private let dictionary: [String: String] = [
@@ -16,6 +17,7 @@ class TransactionsCell: UITableViewCell {
         "USD": "$",
         "CAD": "CA$"
     ]
+    
     private lazy var leftLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black

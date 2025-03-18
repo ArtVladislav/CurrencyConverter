@@ -1,5 +1,5 @@
 //
-//  ProductsModel.swift
+//  Models.swift
 //  СurrencyСonverter
 //
 //  Created by Владислав Артюхов on 16.03.2025.

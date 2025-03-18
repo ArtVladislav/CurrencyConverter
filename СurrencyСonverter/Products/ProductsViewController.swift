@@ -9,8 +9,6 @@ import UIKit
 
 protocol ProductsViewProtocol: AnyObject {
     func update(model: [ProductsModel])
-    func showError()
-    func showEmpty()
     func startLoader()
     func stopLoader()
 }
@@ -43,13 +41,6 @@ final class ProductsViewController: UIViewController {
 }
 
 extension ProductsViewController: ProductsViewProtocol {
-    func showError() {
-        //
-    }
-    
-    func showEmpty() {
-        //
-    }
     
     func startLoader() {
         prodactView.startLoader()

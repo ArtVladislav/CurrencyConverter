@@ -8,6 +8,7 @@
 import UIKit
 
 class ProductsCell: UITableViewCell {
+    
     static let cellId = "ProductsCell"
     
     private lazy var skuLabel: UILabel = {
