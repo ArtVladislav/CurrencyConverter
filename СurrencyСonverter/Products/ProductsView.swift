@@ -11,6 +11,7 @@ final class ProductsView: UIView, UITableViewDelegate, UITableViewDataSource {
     private var tableView: UITableView
     private let presenter: ProductsPresenterProtocol
     private var model: [ProductsModel]?
+    private var activityIndicator: UIActivityIndicatorView!
     
     init(presenter: ProductsPresenterProtocol) {
         self.presenter = presenter
@@ -21,6 +22,11 @@ final class ProductsView: UIView, UITableViewDelegate, UITableViewDataSource {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        activityIndicator.center = CGPoint(x: bounds.midX, y: bounds.midY)
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -40,6 +46,21 @@ final class ProductsView: UIView, UITableViewDelegate, UITableViewDataSource {
         cell.configure(with: model[indexPath.row])
         return cell
     }
+    func showError() {
+        //
+    }
+    
+    func showEmpty() {
+        //
+    }
+    
+    func startLoader() {
+        activityIndicator.startAnimating()
+    }
+    
+    func stopLoader() {
+        activityIndicator.stopAnimating()
+    }
     
     func update(model: [ProductsModel]) {
         self.model = model
@@ -51,13 +72,21 @@ final class ProductsView: UIView, UITableViewDelegate, UITableViewDataSource {
 
 extension ProductsView {
     
-    func commonInit() {
+    private func commonInit() {
         backgroundColor = .white
         setupTableView()
         setupConstraints()
+        setupIndicator()
     }
     
-    func setupTableView() {
+    private func setupIndicator(){
+        activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.color = .gray
+        activityIndicator.hidesWhenStopped = true
+        addSubview(activityIndicator)
+    }
+    
+    private func setupTableView() {
         tableView.backgroundColor = .white
         tableView.rowHeight = 50
         addSubview(tableView)
@@ -66,7 +95,7 @@ extension ProductsView {
         tableView.dataSource = self
     }
     
-    func setupConstraints() {
+    private func setupConstraints() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: topAnchor),

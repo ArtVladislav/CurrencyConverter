@@ -15,3 +15,9 @@ struct TransactionsModel {
     let amount: Double
     let convertedGBP: Double
 }
+
+struct Rate {
+    let from: String
+    let to: String
+    let rate: Double
+}
