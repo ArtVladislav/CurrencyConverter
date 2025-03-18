@@ -8,139 +8,110 @@
 import UIKit
 
 protocol RestServiceProtocol {
-    func loadProductsFromPlist(completion: @escaping (Result<[ProductsModel], CustomError>) -> ())
-    func getConvert(with model: ProductsModel, completion: @escaping (Result<[TransactionsModel], CustomError>) -> ())
-    var fileNameTransactions: String { get }
-    var fileNameRates: String { get }
+    func getProductsFromPlist(completion: @escaping (Result<[ProductsModel], CustomError>) -> ())
+    func getAllTransactions(with model: ProductsModel, completion: @escaping (Result<[TransactionsModel], CustomError>) -> ())
 }
 
 final class RestService: RestServiceProtocol {
     
-    var fileNameTransactions: String { "transactions" }
-    var fileNameRates: String { "rates" }
-    
-    func getConvert(with model: ProductsModel, completion: @escaping (Result<[TransactionsModel], CustomError>) -> ()) {
+    func getProductsFromPlist(completion: @escaping (Result<[ProductsModel], CustomError>) -> ()) {
         DispatchQueue.global(qos: .userInitiated).async {
-            guard let rates = self.loadRatesFromPlist() else {
-                DispatchQueue.main.async {
-                    completion(.failure(.calculationError))
-                }
-                return
-            }
-            let ratesDict = self.createRatesDictionary(from: rates)
-            let transactions = self.convertCurrency(with: model, ratesDict: ratesDict)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                completion(.success(transactions))
-            }
-        }
-    }
-    
-    func loadProductsFromPlist(completion: @escaping (Result<[ProductsModel], CustomError>) -> ()) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            guard let path = Bundle.main.path(forResource: self.fileNameTransactions, ofType: "plist"),
-                  let plistData = FileManager.default.contents(atPath: path),
-                  let plistArray = try? PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [[String: String]] else {
+            guard let model = self.getProducts(with: Constants.fileNameTransactions, extensionFile: Constants.fileExtension) else {
                 DispatchQueue.main.async {
                     completion(.failure(.failedToLoadDataFromFile))
                 }
                 return
             }
-            
-            // Группируем по sku
-            let groupedProducts = Dictionary(grouping: plistArray) { $0["sku"]! }
-            
-            // Преобразуем в массив моделей ProductsModel
-            let products = groupedProducts.compactMap { sku, dicts -> ProductsModel? in
-                guard !sku.isEmpty else { return nil }
-                
-                // Преобразуем массив словарей в массив транзакций
-                let transactions = dicts.compactMap { dict -> (currency: String, amount: Double)? in
-                    guard let amountString = dict["amount"],
-                          let amount = Double(amountString), // Преобразуем String в Double
-                          let currency = dict["currency"] else {
-                        return nil
-                    }
-                    return (currency: currency, amount: amount)
-                }
-                
-                // Создаем модель ProductsModel
-                return ProductsModel(sku: sku, transactions: transactions)
+            DispatchQueue.main.async {
+                completion(.success(model))
             }
-            
-            // Сортируем массив моделей по sku
-            let sortedProducts = products.sorted { $0.sku < $1.sku }
-            
+        }
+    }
+    
+    func getAllTransactions(with model: ProductsModel, completion: @escaping (Result<[TransactionsModel], CustomError>) -> ()) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            guard let model = self.getTransactions(with: Constants.fileNameRates, extensionFile: Constants.fileExtension, transactions: model.arrayTransactions, targetCurrency: Constants.targetCurrency) else {
+                DispatchQueue.main.async {
+                    completion(.failure(.calculationError))
+                }
+                return
+            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                completion(.success(sortedProducts))
+                completion(.success(model))
             }
         }
     }
 }
 
 extension RestService {
-
+    
+    private func getData(with fileName: String, extensionFile: String) -> Data? {
+        guard let path = Bundle.main.path(forResource: fileName, ofType: extensionFile) else { return nil }
+        return FileManager.default.contents(atPath: path)
+    }
+    
+    private func getPlistModel<T: Decodable>(with fileName: String, extensionFile: String) -> [T]? {
+        guard let data = getData(with: fileName, extensionFile: extensionFile) else { return nil }
+        do {
+            return try PropertyListDecoder().decode([T].self, from: data)
+        } catch {
+            print("Error decodable")
+            return nil
+        }
+    }
+  
+    private func getProducts(with fileName: String, extensionFile: String) -> [ProductsModel]? {
+        guard let model: [ProductsPlistModel] = getPlistModel(with: fileName, extensionFile: extensionFile) else { return nil }
+        let groupedDict = Dictionary(grouping: model, by: { $0.sku })
+        return groupedDict.map { sku, plistModels in
+            let transactions = plistModels.compactMap { plistModel -> TransactionsProduct? in
+                return TransactionsProduct(currency: plistModel.currency, amount: Double(plistModel.amount) ?? 0)
+            }
+            return ProductsModel(sku: sku, arrayTransactions: transactions)
+        }.sorted { $0.sku < $1.sku }
+    }
+    
+    private func getTransactions(with fileName: String, extensionFile: String, transactions: [TransactionsProduct], targetCurrency: String) -> [TransactionsModel]? {
+        guard let rates: [RatesModel] = getPlistModel(with: fileName, extensionFile: extensionFile) else { return nil }
+        let filteredRates = rates.filter { $0.to == targetCurrency }
+        let ratesDict = Dictionary(uniqueKeysWithValues: filteredRates.map { ($0.from, Double($0.rate) ?? 1.0) })
+        
+        // Создаем словарь для конвертации через USD
+        let usdRatesDict = Dictionary(uniqueKeysWithValues: rates.filter { $0.to == Constants.currencyUSD }.map { ($0.from, Double($0.rate) ?? 1.0) })
+        let targetRateFromUSD = rates.first { $0.from == Constants.currencyUSD && $0.to == targetCurrency }.flatMap { Double($0.rate) } ?? 1.0
+        
+        return transactions.compactMap { transaction in
+            // Пытаемся конвертировать напрямую в целевую валюту
+            if let rate = ratesDict[transaction.currency] {
+                let convertedAmount = transaction.amount * rate
+                return TransactionsModel(currency: transaction.currency, amount: transaction.amount, convertedGBP: convertedAmount)
+            }
+            // Если прямой курс не найден, конвертируем через USD
+            else if let usdRate = usdRatesDict[transaction.currency], targetRateFromUSD != 0 {
+                let amountInUSD = transaction.amount * usdRate
+                let convertedAmount = amountInUSD * targetRateFromUSD
+                return TransactionsModel(currency: transaction.currency, amount: transaction.amount, convertedGBP: convertedAmount)
+            }
+            // Если ни один из курсов не найден, пропускаем транзакцию
+            else {
+                print("Курс для валюты \(transaction.currency) не найден для конвертации в \(targetCurrency) (включая конвертацию через \(Constants.currencyUSD))")
+                return nil
+            }
+        }
+    }
+    
     func getSum(model: [TransactionsModel]) -> Double {
         let sum = model.map { $0.convertedGBP }.reduce(0, +)
         return sum
     }
-    
-    private func loadRatesFromPlist() -> [Rate]? {
-        guard let path = Bundle.main.path(forResource: self.fileNameRates, ofType: "plist"),
-              let plistData = FileManager.default.contents(atPath: path),
-              let plistArray = try? PropertyListSerialization.propertyList(from: plistData, options: [], format: nil) as? [[String: Any]] else {
-            return nil
-        }
-        
-        return plistArray.compactMap { dict in
-            guard let from = dict["from"] as? String,
-                  let to = dict["to"] as? String,
-                  let rateString = dict["rate"] as? String,
-                  let rate = Double(rateString) else {
-                return nil
-            }
-            return Rate(from: from, to: to, rate: rate)
-        }
-    }
-    
-    private func createRatesDictionary(from rates: [Rate]) -> [String: Double] {
-        var ratesDict: [String: Double] = [:]
-        for rate in rates {
-            let key = "\(rate.from)-\(rate.to)"
-            ratesDict[key] = rate.rate
-        }
-        return ratesDict
-    }
+}
 
-    private func convertCurrency(with model: ProductsModel, ratesDict: [String: Double]) -> [TransactionsModel] {
-        return model.transactions.map { transaction in
-            let amount = transaction.amount
-            let currency = transaction.currency
-            
-            // Если валюта уже GBP, возвращаем исходную сумму
-            if currency == "GBP" {
-                return TransactionsModel(currency: currency, amount: amount, convertedGBP: amount)
-            }
-            
-            // Прямая конвертация в GBP
-            let directKey = "\(currency)-GBP"
-            if let directRate = ratesDict[directKey] {
-                let convertedGBP = amount * directRate
-                return TransactionsModel(currency: currency, amount: amount, convertedGBP: convertedGBP)
-            }
-            
-            // Конвертация через USD
-            let toUSDKey = "\(currency)-USD"
-            let toGBPKey = "USD-GBP"
-            
-            if let usdRate = ratesDict[toUSDKey], let gbpRate = ratesDict[toGBPKey] {
-                let amountInUSD = amount * usdRate
-                let convertedGBP = amountInUSD * gbpRate
-                return TransactionsModel(currency: currency, amount: amount, convertedGBP: convertedGBP)
-            }
-            
-            // Если конвертация невозможна, возвращаем исходные данные с convertedGBP = 0
-            return TransactionsModel(currency: currency, amount: amount, convertedGBP: 0)
-        }
+private extension RestService {
+     enum Constants {
+         static let fileNameTransactions: String = "transactions"
+         static let fileNameRates: String = "rates"
+         static let fileExtension: String = "plist"
+         static let currencyUSD: String = "USD"
+         static let targetCurrency: String = "GBP"
     }
-    
 }

@@ -27,7 +27,7 @@ final class ProductsPresenter: ProductsPresenterProtocol {
     
     func viewDidLoad() {
         view?.startLoader()
-        service.loadProductsFromPlist { [weak self] result in
+        service.getProductsFromPlist { [weak self] result in
 
             guard let self else { return }
             self.view?.stopLoader()
