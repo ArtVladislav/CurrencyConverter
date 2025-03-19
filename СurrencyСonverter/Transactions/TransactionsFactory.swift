@@ -7,15 +7,15 @@
 import UIKit
 
 final class TransactionsFactory {
-    func make(with model: ProductsModel) -> UIViewController {
+    func make(with model: ProductsModel, rates: [RatesModel]) -> UIViewController {
         
-        let service = RestService()
+        let service = CurrencyConverter()
         
         let formatter = CurrencyFormatter()
         
         let router = TransactionsRouter()
         
-        let presenter = TransactionsPresenter(service: service, router: router, model: model, formatter: formatter)
+        let presenter = TransactionsPresenter(service: service, router: router, model: model, formatter: formatter, rates: rates)
         
         let vc = TransactionsViewController(presenter: presenter)
             

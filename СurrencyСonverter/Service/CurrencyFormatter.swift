@@ -11,12 +11,12 @@ protocol CurrencyFormatterProtocol {
     func make(with model: TransactionsModel, onlyTargetCurrency: Bool) -> String
 }
 
-class CurrencyFormatter: CurrencyFormatterProtocol {
+final class CurrencyFormatter: CurrencyFormatterProtocol {
     func make(with model: TransactionsModel, onlyTargetCurrency: Bool) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.currencyCode = onlyTargetCurrency ? CurrencyFormatter.targetCurrency : model.currency
-        formatter.locale = Locale(identifier: "en_US")
+        formatter.currencyCode = onlyTargetCurrency ? Constants.targetCurrency : model.currency
+        formatter.locale = Locale(identifier: Constants.identifier)
         formatter.groupingSeparator = ","
         formatter.decimalSeparator = "."
         formatter.minimumFractionDigits = 2
@@ -25,6 +25,9 @@ class CurrencyFormatter: CurrencyFormatterProtocol {
     }
 }
 
-extension CurrencyFormatter {
-    static let targetCurrency: String = "GBP"
+private extension CurrencyFormatter {
+    enum Constants {
+        static let identifier: String = "en_US"
+        static let targetCurrency: String = "GBP"
+    }
 }
