@@ -8,11 +8,11 @@
 import Foundation
 
 protocol CurrencyFormatterProtocol {
-    func make(with model: TransactionsModel, onlyTargetCurrency: Bool) -> String
+    func make(with model: TransactionsDomainLayer, onlyTargetCurrency: Bool) -> String
 }
 
 final class CurrencyFormatter: CurrencyFormatterProtocol {
-    func make(with model: TransactionsModel, onlyTargetCurrency: Bool) -> String {
+    func make(with model: TransactionsDomainLayer, onlyTargetCurrency: Bool) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.currencyCode = onlyTargetCurrency ? Constants.targetCurrency : model.currency

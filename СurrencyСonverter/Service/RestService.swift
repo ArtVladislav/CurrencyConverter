@@ -8,13 +8,13 @@
 import UIKit
 
 protocol RestServiceProtocol {
-    func getDomainLayerProducts(completion: @escaping (Result<[ProductsModel], CustomError>) -> ())
-    func getDataLayerRates(completion: @escaping (Result<[RatesModel], CustomError>) -> ())
+    func getDomainLayerProducts(completion: @escaping (Result<[ProductsDomainLayer], CustomError>) -> ())
+    func getDataLayerRates(completion: @escaping (Result<[RatesDataLayer], CustomError>) -> ())
 }
 
 final class RestService: RestServiceProtocol {
     
-    func getDomainLayerProducts(completion: @escaping (Result<[ProductsModel], CustomError>) -> ()) {
+    func getDomainLayerProducts(completion: @escaping (Result<[ProductsDomainLayer], CustomError>) -> ()) {
         DispatchQueue.global(qos: .userInitiated).async {
             guard let model = self.getProducts(with: Constants.fileNameTransactions, extensionFile: Constants.fileExtension) else {
                 DispatchQueue.main.async {
@@ -28,9 +28,9 @@ final class RestService: RestServiceProtocol {
         }
     }
     
-    func getDataLayerRates(completion: @escaping (Result<[RatesModel], CustomError>) -> ()) {
+    func getDataLayerRates(completion: @escaping (Result<[RatesDataLayer], CustomError>) -> ()) {
         DispatchQueue.global(qos: .userInitiated).async {
-            guard let model: [RatesModel] = self.getPlistModel(with: Constants.fileNameRates, extensionFile: Constants.fileExtension) else {
+            guard let model: [RatesDataLayer] = self.getPlistModel(with: Constants.fileNameRates, extensionFile: Constants.fileExtension) else {
                 DispatchQueue.main.async {
                     completion(.failure(.failedToLoadDataFromFile))
                 }
@@ -60,14 +60,14 @@ extension RestService {
         }
     }
   
-    private func getProducts(with fileName: String, extensionFile: String) -> [ProductsModel]? {
-        guard let model: [ProductsPlistModel] = getPlistModel(with: fileName, extensionFile: extensionFile) else { return nil }
+    private func getProducts(with fileName: String, extensionFile: String) -> [ProductsDomainLayer]? {
+        guard let model: [ProductsDataLayer] = getPlistModel(with: fileName, extensionFile: extensionFile) else { return nil }
         let groupedDict = Dictionary(grouping: model, by: { $0.sku })
         return groupedDict.map { sku, plistModels in
             let transactions = plistModels.compactMap { plistModel -> TransactionsProduct? in
                 return TransactionsProduct(currency: plistModel.currency, amount: Double(plistModel.amount) ?? 0)
             }
-            return ProductsModel(sku: sku, arrayTransactions: transactions)
+            return ProductsDomainLayer(sku: sku, arrayTransactions: transactions)
         }.sorted { $0.sku < $1.sku }
     }
 }

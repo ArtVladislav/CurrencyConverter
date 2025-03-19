@@ -11,7 +11,7 @@ final class TransactionsCell: CustomTableCell {
     
     static let cellId = "TransactionsCell"
 
-    func configure(with model: TransactionsModel, presenter: TransactionsPresenterProtocol) {
+    func configure(with model: TransactionsDomainLayer, presenter: TransactionsPresenterProtocol) {
         leftLabel.text = presenter.useFormatter(with: model, onlyTargetCurrency: false)
         rightLabel.text = presenter.useFormatter(with: model, onlyTargetCurrency: true)
     }

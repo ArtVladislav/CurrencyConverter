@@ -9,7 +9,7 @@ protocol ProductsPresenterProtocol: AnyObject {
     var title: String { get }
     init(service: RestService, router: ProductsRouterProtocol)
     func viewDidLoad()
-    func tapCell(with model: ProductsModel)
+    func tapCell(with model: ProductsDomainLayer)
 }
 
 final class ProductsPresenter: ProductsPresenterProtocol {
@@ -19,7 +19,7 @@ final class ProductsPresenter: ProductsPresenterProtocol {
     weak var view: ProductsViewProtocol?
     private let service: RestService
     private let router: ProductsRouterProtocol
-    private var rates: [RatesModel]?
+    private var rates: [RatesDataLayer]?
     
     init(service: RestService, router: ProductsRouterProtocol) {
         self.service = service
@@ -51,7 +51,7 @@ final class ProductsPresenter: ProductsPresenterProtocol {
         }
     }
     
-    func tapCell(with model: ProductsModel) {
+    func tapCell(with model: ProductsDomainLayer) {
         guard let rates = rates else { return }
         router.openTransactions(with: model, rates: rates)
     }

@@ -7,7 +7,7 @@
 import UIKit
 
 final class TransactionsFactory {
-    func make(with model: ProductsModel, rates: [RatesModel]) -> UIViewController {
+    func make(with model: ProductsDomainLayer, rates: [RatesDataLayer]) -> UIViewController {
         
         let service = CurrencyConverter()
         

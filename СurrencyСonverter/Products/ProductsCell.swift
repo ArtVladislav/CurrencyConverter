@@ -11,12 +11,12 @@ final class ProductsCell: CustomTableCell {
     
     static let cellId = "ProductsCell"
     
-    func configure(with model: ProductsModel) {
+    func configure(with model: ProductsDomainLayer) {
         leftLabel.text = model.sku
         rightLabel.attributedText = getMaskText(with: model)
     }
     
-    private func getMaskText(with model: ProductsModel) -> NSAttributedString {
+    private func getMaskText(with model: ProductsDomainLayer) -> NSAttributedString {
         let arrow = UIImage(systemName: "chevron.right")?.withTintColor(.gray, renderingMode: .alwaysOriginal)
         let attachment = NSTextAttachment()
         attachment.image = arrow

@@ -7,10 +7,10 @@
 import UIKit
 protocol TransactionsPresenterProtocol: AnyObject {
     var title: String { get }
-    init(service: CurrencyConverterProtocol, router: TransactionsRouterProtocol, model: ProductsModel, formatter: CurrencyFormatterProtocol, rates: [RatesModel])
+    init(service: CurrencyConverterProtocol, router: TransactionsRouterProtocol, model: ProductsDomainLayer, formatter: CurrencyFormatterProtocol, rates: [RatesDataLayer])
     func viewDidLoad()
-    func getSum(model: [TransactionsModel]) -> Double
-    func useFormatter(with model: TransactionsModel, onlyTargetCurrency: Bool) -> String
+    func getSum(model: [TransactionsDomainLayer]) -> Double
+    func useFormatter(with model: TransactionsDomainLayer, onlyTargetCurrency: Bool) -> String
 }
 
 final class TransactionsPresenter: TransactionsPresenterProtocol {
@@ -20,11 +20,11 @@ final class TransactionsPresenter: TransactionsPresenterProtocol {
     
     private let service: CurrencyConverterProtocol
     private let router: TransactionsRouterProtocol
-    private let model: ProductsModel
+    private let model: ProductsDomainLayer
     private let formatter: CurrencyFormatterProtocol
-    private let rates: [RatesModel]
+    private let rates: [RatesDataLayer]
     
-    init(service: CurrencyConverterProtocol, router: any TransactionsRouterProtocol, model: ProductsModel, formatter: CurrencyFormatterProtocol, rates: [RatesModel]) {
+    init(service: CurrencyConverterProtocol, router: any TransactionsRouterProtocol, model: ProductsDomainLayer, formatter: CurrencyFormatterProtocol, rates: [RatesDataLayer]) {
         self.service = service
         self.router = router
         self.model = model
@@ -47,11 +47,11 @@ final class TransactionsPresenter: TransactionsPresenterProtocol {
         }
     }
     
-    func useFormatter(with model: TransactionsModel, onlyTargetCurrency: Bool) -> String {
+    func useFormatter(with model: TransactionsDomainLayer, onlyTargetCurrency: Bool) -> String {
         formatter.make(with: model, onlyTargetCurrency: onlyTargetCurrency)
     }
     
-    func getSum(model: [TransactionsModel]) -> Double {
+    func getSum(model: [TransactionsDomainLayer]) -> Double {
         return service.getSum(model: model)
     }
 }
