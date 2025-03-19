@@ -7,9 +7,10 @@
 import UIKit
 protocol TransactionsPresenterProtocol: AnyObject {
     var title: String { get }
-    init(service: RestService, router: TransactionsRouterProtocol, model: ProductsModel)
+    init(service: RestService, router: TransactionsRouterProtocol, model: ProductsModel, formatter: CurrencyFormatterProtocol)
     func viewDidLoad()
     func getSum(model: [TransactionsModel]) -> Double
+    func useFormatter(with model: TransactionsModel, onlyTargetCurrency: Bool) -> String
 }
 
 final class TransactionsPresenter: TransactionsPresenterProtocol {
@@ -20,11 +21,13 @@ final class TransactionsPresenter: TransactionsPresenterProtocol {
     private let service: RestService
     private let router: TransactionsRouterProtocol
     private let model: ProductsModel
+    private let formatter: CurrencyFormatterProtocol
     
-    init(service: RestService, router: any TransactionsRouterProtocol, model: ProductsModel) {
+    init(service: RestService, router: any TransactionsRouterProtocol, model: ProductsModel, formatter: CurrencyFormatterProtocol) {
         self.service = service
         self.router = router
         self.model = model
+        self.formatter = formatter
     }
     
     func viewDidLoad() {
@@ -40,6 +43,10 @@ final class TransactionsPresenter: TransactionsPresenterProtocol {
                     router.showError(message: error.localizedDescription)
                 }
         }
+    }
+    
+    func useFormatter(with model: TransactionsModel, onlyTargetCurrency: Bool) -> String {
+        formatter.make(with: model, onlyTargetCurrency: onlyTargetCurrency)
     }
     
     func getSum(model: [TransactionsModel]) -> Double {
