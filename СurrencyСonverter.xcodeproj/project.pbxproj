@@ -11,10 +11,21 @@
 		2FDE73412D87861A0099229C /* rates.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2FDE733E2D87861A0099229C /* rates.plist */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		2FDE73EE2D8AD2620099229C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2FB0BFF52D86E9360003F12F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2FB0BFFC2D86E9360003F12F;
+			remoteInfo = "СurrencyСonverter";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		2FB0BFFD2D86E9360003F12F /* СurrencyСonverter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "СurrencyСonverter.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FDE733E2D87861A0099229C /* rates.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = rates.plist; sourceTree = "<group>"; };
 		2FDE733F2D87861A0099229C /* transactions.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = transactions.plist; sourceTree = "<group>"; };
+		2FDE73EA2D8AD2620099229C /* СurrencyСonverterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "СurrencyСonverterTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -36,10 +47,22 @@
 			path = "СurrencyСonverter";
 			sourceTree = "<group>";
 		};
+		2FDE73EB2D8AD2620099229C /* СurrencyСonverterTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "СurrencyСonverterTests";
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		2FB0BFFA2D86E9360003F12F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2FDE73E72D8AD2620099229C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -53,6 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				2FB0BFFF2D86E9360003F12F /* СurrencyСonverter */,
+				2FDE73EB2D8AD2620099229C /* СurrencyСonverterTests */,
 				2FB0BFFE2D86E9360003F12F /* Products */,
 				2FDE733E2D87861A0099229C /* rates.plist */,
 				2FDE733F2D87861A0099229C /* transactions.plist */,
@@ -63,6 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				2FB0BFFD2D86E9360003F12F /* СurrencyСonverter.app */,
+				2FDE73EA2D8AD2620099229C /* СurrencyСonverterTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -92,6 +117,29 @@
 			productReference = 2FB0BFFD2D86E9360003F12F /* СurrencyСonverter.app */;
 			productType = "com.apple.product-type.application";
 		};
+		2FDE73E92D8AD2620099229C /* СurrencyСonverterTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2FDE73F02D8AD2620099229C /* Build configuration list for PBXNativeTarget "СurrencyСonverterTests" */;
+			buildPhases = (
+				2FDE73E62D8AD2620099229C /* Sources */,
+				2FDE73E72D8AD2620099229C /* Frameworks */,
+				2FDE73E82D8AD2620099229C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2FDE73EF2D8AD2620099229C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				2FDE73EB2D8AD2620099229C /* СurrencyСonverterTests */,
+			);
+			name = "СurrencyСonverterTests";
+			packageProductDependencies = (
+			);
+			productName = "СurrencyСonverterTests";
+			productReference = 2FDE73EA2D8AD2620099229C /* СurrencyСonverterTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -104,6 +152,10 @@
 				TargetAttributes = {
 					2FB0BFFC2D86E9360003F12F = {
 						CreatedOnToolsVersion = 16.2;
+					};
+					2FDE73E92D8AD2620099229C = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 2FB0BFFC2D86E9360003F12F;
 					};
 				};
 			};
@@ -122,6 +174,7 @@
 			projectRoot = "";
 			targets = (
 				2FB0BFFC2D86E9360003F12F /* СurrencyСonverter */,
+				2FDE73E92D8AD2620099229C /* СurrencyСonverterTests */,
 			);
 		};
 /* End PBXProject section */
@@ -136,6 +189,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2FDE73E82D8AD2620099229C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -146,7 +206,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2FDE73E62D8AD2620099229C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2FDE73EF2D8AD2620099229C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2FB0BFFC2D86E9360003F12F /* СurrencyСonverter */;
+			targetProxy = 2FDE73EE2D8AD2620099229C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		2FB0C0112D86E9380003F12F /* Debug */ = {
@@ -324,6 +399,42 @@
 			};
 			name = Release;
 		};
+		2FDE73F12D8AD2620099229C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = BXKN4K78G6;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Vladislav.-urrency-onverterTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/СurrencyСonverter.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/СurrencyСonverter";
+			};
+			name = Debug;
+		};
+		2FDE73F22D8AD2620099229C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = BXKN4K78G6;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Vladislav.-urrency-onverterTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/СurrencyСonverter.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/СurrencyСonverter";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -341,6 +452,15 @@
 			buildConfigurations = (
 				2FB0C0112D86E9380003F12F /* Debug */,
 				2FB0C0122D86E9380003F12F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2FDE73F02D8AD2620099229C /* Build configuration list for PBXNativeTarget "СurrencyСonverterTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2FDE73F12D8AD2620099229C /* Debug */,
+				2FDE73F22D8AD2620099229C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
