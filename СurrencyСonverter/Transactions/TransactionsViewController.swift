@@ -13,13 +13,16 @@ protocol TransactionsViewProtocol: AnyObject {
     func stopLoader()
 }
 
-class TransactionsViewController: UIViewController {
+class TransactionsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
+    private let tableView: UITableView
     private let presenter: TransactionsPresenterProtocol
-    private lazy var transactionsView = TransactionsView(presenter: presenter)
+    private var model: [TransactionsModel]?
+    private var activityIndicator: UIActivityIndicatorView!
     
     init(presenter: TransactionsPresenterProtocol) {
         self.presenter = presenter
+        self.tableView = UITableView()
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -27,16 +30,35 @@ class TransactionsViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func loadView() {
-        view = transactionsView
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = presenter.title
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
-        navigationController?.navigationBar.barTintColor = .white
+        commonInit()
         presenter.viewDidLoad()
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard let model = model else { return nil }
+        let sum = presenter.getSum(model: model)
+        return "Total: " + presenter.useFormatter(with: TransactionsModel(currency: "", amount: 0, finalTargetCurrency: sum), onlyTargetCurrency: true)
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        if let header = view as? UITableViewHeaderFooterView {
+            header.textLabel?.textColor = .black
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard let model = self.model else { return 0 }
+        return model.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: TransactionsCell.cellId, for: indexPath) as? TransactionsCell else { return UITableViewCell() }
+        guard let model = self.model else { return cell }
+        cell.configure(with: model[indexPath.row], presenter: presenter)
+        return cell
     }
     
     deinit {
@@ -47,14 +69,54 @@ class TransactionsViewController: UIViewController {
 extension TransactionsViewController: TransactionsViewProtocol {
     
     func startLoader() {
-        transactionsView.startLoader()
+        activityIndicator.startAnimating()
     }
     
     func stopLoader() {
-        transactionsView.stopLoader()
+        activityIndicator.stopAnimating()
     }
     
     func update(with model: [TransactionsModel]) {
-        transactionsView.update(with: model)
+        self.model = model
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+    
+    private func commonInit() {
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+        navigationController?.navigationBar.barTintColor = .white
+        view.backgroundColor = .white
+        setupTableView()
+        setupConstraints()
+        setupIndicator()
+    }
+    
+    private func setupIndicator(){
+        activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.color = .gray
+        activityIndicator.center = view.center
+        activityIndicator.hidesWhenStopped = true
+        view.addSubview(activityIndicator)
+    }
+    
+    private func setupTableView() {
+        tableView.backgroundColor = .white
+        tableView.rowHeight = 50
+        tableView.allowsSelection = false
+        view.addSubview(tableView)
+        tableView.register(TransactionsCell.self, forCellReuseIdentifier: TransactionsCell.cellId)
+        tableView.delegate = self
+        tableView.dataSource = self
+    }
+    
+    private func setupConstraints() {
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
     }
 }

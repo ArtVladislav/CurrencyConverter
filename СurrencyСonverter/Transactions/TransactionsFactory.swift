@@ -11,9 +11,11 @@ final class TransactionsFactory {
         
         let service = RestService()
         
+        let formatter = CurrencyFormatter()
+        
         let router = TransactionsRouter()
         
-        let presenter = TransactionsPresenter(service: service, router: router, model: model)
+        let presenter = TransactionsPresenter(service: service, router: router, model: model, formatter: formatter)
         
         let vc = TransactionsViewController(presenter: presenter)
             

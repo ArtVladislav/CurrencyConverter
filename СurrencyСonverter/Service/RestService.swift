@@ -22,7 +22,7 @@ final class RestService: RestServiceProtocol {
                 }
                 return
             }
-            DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 completion(.success(model))
             }
         }
@@ -36,7 +36,7 @@ final class RestService: RestServiceProtocol {
                 }
                 return
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 completion(.success(model))
             }
         }
@@ -81,16 +81,19 @@ extension RestService {
         let targetRateFromUSD = rates.first { $0.from == Constants.currencyUSD && $0.to == targetCurrency }.flatMap { Double($0.rate) } ?? 1.0
         
         return transactions.compactMap { transaction in
+            if transaction.currency == targetCurrency {
+                return TransactionsModel(currency: transaction.currency, amount: transaction.amount, finalTargetCurrency: transaction.amount)
+            }
             // Пытаемся конвертировать напрямую в целевую валюту
             if let rate = ratesDict[transaction.currency] {
                 let convertedAmount = transaction.amount * rate
-                return TransactionsModel(currency: transaction.currency, amount: transaction.amount, convertedGBP: convertedAmount)
+                return TransactionsModel(currency: transaction.currency, amount: transaction.amount, finalTargetCurrency: convertedAmount)
             }
             // Если прямой курс не найден, конвертируем через USD
             else if let usdRate = usdRatesDict[transaction.currency], targetRateFromUSD != 0 {
                 let amountInUSD = transaction.amount * usdRate
                 let convertedAmount = amountInUSD * targetRateFromUSD
-                return TransactionsModel(currency: transaction.currency, amount: transaction.amount, convertedGBP: convertedAmount)
+                return TransactionsModel(currency: transaction.currency, amount: transaction.amount, finalTargetCurrency: convertedAmount)
             }
             // Если ни один из курсов не найден, пропускаем транзакцию
             else {
@@ -101,7 +104,7 @@ extension RestService {
     }
     
     func getSum(model: [TransactionsModel]) -> Double {
-        let sum = model.map { $0.convertedGBP }.reduce(0, +)
+        let sum = model.map { $0.finalTargetCurrency }.reduce(0, +)
         return sum
     }
 }
