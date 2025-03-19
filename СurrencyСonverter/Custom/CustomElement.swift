@@ -20,7 +20,6 @@ final class CustomUILabel: UILabel {
     private func setup() {
         translatesAutoresizingMaskIntoConstraints = false
         textColor = .black
-        text = ""
         font = .systemFont(ofSize: 17, weight: .medium)
         backgroundColor = .clear
     }
