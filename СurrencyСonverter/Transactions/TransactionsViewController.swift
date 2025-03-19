@@ -8,7 +8,7 @@
 import UIKit
 
 protocol TransactionsViewProtocol: AnyObject {
-    func update(with model: [TransactionsModel])
+    func update(with model: [TransactionsDomainLayer])
     func startLoader()
     func stopLoader()
 }
@@ -17,7 +17,7 @@ class TransactionsViewController: UIViewController, UITableViewDelegate, UITable
     
     private let tableView: UITableView
     private let presenter: TransactionsPresenterProtocol
-    private var model: [TransactionsModel]?
+    private var model: [TransactionsDomainLayer]?
     private var activityIndicator: UIActivityIndicatorView!
     
     init(presenter: TransactionsPresenterProtocol) {
@@ -40,7 +40,7 @@ class TransactionsViewController: UIViewController, UITableViewDelegate, UITable
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         guard let model = model else { return nil }
         let sum = presenter.getSum(model: model)
-        return "Total: " + presenter.useFormatter(with: TransactionsModel(currency: "", amount: 0, finalTargetCurrency: sum), onlyTargetCurrency: true)
+        return "Total: " + presenter.useFormatter(with: TransactionsDomainLayer(currency: "", amount: 0, finalTargetCurrency: sum), onlyTargetCurrency: true)
     }
     
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
@@ -76,7 +76,7 @@ extension TransactionsViewController: TransactionsViewProtocol {
         activityIndicator.stopAnimating()
     }
     
-    func update(with model: [TransactionsModel]) {
+    func update(with model: [TransactionsDomainLayer]) {
         self.model = model
         DispatchQueue.main.async {
             self.tableView.reloadData()

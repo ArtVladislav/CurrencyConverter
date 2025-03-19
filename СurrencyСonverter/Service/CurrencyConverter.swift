@@ -7,13 +7,13 @@
 import UIKit
 
 protocol CurrencyConverterProtocol {
-    func getDomainLayerTransactions(transactions: [TransactionsProduct], rates: [RatesModel], completion: @escaping (Result<[TransactionsModel], CustomError>) -> ())
-    func getSum(model: [TransactionsModel]) -> Double
+    func getDomainLayerTransactions(transactions: [TransactionsProduct], rates: [RatesDataLayer], completion: @escaping (Result<[TransactionsDomainLayer], CustomError>) -> ())
+    func getSum(model: [TransactionsDomainLayer]) -> Double
 }
 
 final class CurrencyConverter: CurrencyConverterProtocol {
     
-    func getDomainLayerTransactions(transactions: [TransactionsProduct], rates: [RatesModel], completion: @escaping (Result<[TransactionsModel], CustomError>) -> ()) {
+    func getDomainLayerTransactions(transactions: [TransactionsProduct], rates: [RatesDataLayer], completion: @escaping (Result<[TransactionsDomainLayer], CustomError>) -> ()) {
         DispatchQueue.global(qos: .userInitiated).async {
             guard let model = self.getConvert(transactions: transactions, rates: rates, targetCurrency: Constants.targetCurrency) else {
                 DispatchQueue.main.async {
@@ -27,7 +27,7 @@ final class CurrencyConverter: CurrencyConverterProtocol {
         }
     }
     
-    func getSum(model: [TransactionsModel]) -> Double {
+    func getSum(model: [TransactionsDomainLayer]) -> Double {
         let sum = model.map { $0.finalTargetCurrency }.reduce(0, +)
         return sum
     }
@@ -35,7 +35,7 @@ final class CurrencyConverter: CurrencyConverterProtocol {
 
 private extension CurrencyConverter {
     
-    private func getConvert(transactions: [TransactionsProduct], rates: [RatesModel], targetCurrency: String) -> [TransactionsModel]? {
+    private func getConvert(transactions: [TransactionsProduct], rates: [RatesDataLayer], targetCurrency: String) -> [TransactionsDomainLayer]? {
         let filteredRates = rates.filter { $0.to == targetCurrency }
         let ratesDict = Dictionary(uniqueKeysWithValues: filteredRates.map { ($0.from, Double($0.rate) ?? 1.0) })
         // Создаем словарь для конвертации через USD
@@ -44,18 +44,18 @@ private extension CurrencyConverter {
             
         return transactions.compactMap { transaction in
             if transaction.currency == targetCurrency {
-                return TransactionsModel(currency: transaction.currency, amount: transaction.amount, finalTargetCurrency: transaction.amount)
+                return TransactionsDomainLayer(currency: transaction.currency, amount: transaction.amount, finalTargetCurrency: transaction.amount)
             }
             // Пытаемся конвертировать напрямую в целевую валюту
             if let rate = ratesDict[transaction.currency] {
                 let convertedAmount = transaction.amount * rate
-                return TransactionsModel(currency: transaction.currency, amount: transaction.amount, finalTargetCurrency: convertedAmount)
+                return TransactionsDomainLayer(currency: transaction.currency, amount: transaction.amount, finalTargetCurrency: convertedAmount)
             }
             // Если прямой курс не найден, конвертируем через USD
             else if let usdRate = usdRatesDict[transaction.currency], targetRateFromUSD != 0 {
                 let amountInUSD = transaction.amount * usdRate
                 let convertedAmount = amountInUSD * targetRateFromUSD
-                return TransactionsModel(currency: transaction.currency, amount: transaction.amount, finalTargetCurrency: convertedAmount)
+                return TransactionsDomainLayer(currency: transaction.currency, amount: transaction.amount, finalTargetCurrency: convertedAmount)
             } else {
                 print("Курс для валюты \(transaction.currency) не найден для конвертации в \(targetCurrency) (включая конвертацию через \(Constants.currencyUSD))")
                 return nil

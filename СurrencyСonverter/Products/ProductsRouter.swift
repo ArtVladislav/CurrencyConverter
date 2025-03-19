@@ -8,7 +8,7 @@
 import UIKit
 
 protocol ProductsRouterProtocol: AnyObject {
-    func openTransactions(with model: ProductsModel, rates: [RatesModel])
+    func openTransactions(with model: ProductsDomainLayer, rates: [RatesDataLayer])
     func showError(message: String)
 }
 
@@ -27,7 +27,7 @@ final class ProductsRouter: ProductsRouterProtocol {
         self.root = root
     }
     
-    func openTransactions(with model: ProductsModel, rates: [RatesModel]) {
+    func openTransactions(with model: ProductsDomainLayer, rates: [RatesDataLayer]) {
         let vc = factory.make(with: model, rates: rates)
         root?.navigationController?.pushViewController(vc, animated: true)
     }

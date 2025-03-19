@@ -5,7 +5,7 @@
 //  Created by Владислав Артюхов on 16.03.2025.
 //
 
-struct ProductsPlistModel: Decodable {
+struct ProductsDataLayer: Decodable {
     let sku: String
     let currency: String
     let amount: String
@@ -16,18 +16,18 @@ struct TransactionsProduct: Decodable {
     let amount: Double
 }
 
-struct ProductsModel: Decodable {
+struct ProductsDomainLayer: Decodable {
     let sku: String
     let arrayTransactions: [TransactionsProduct]
 }
 
-struct RatesModel: Decodable {
+struct RatesDataLayer: Decodable {
     let from: String
     let to: String
     let rate: String
 }
 
-struct TransactionsModel: Equatable {
+struct TransactionsDomainLayer: Equatable {
     let currency: String
     let amount: Double
     let finalTargetCurrency: Double

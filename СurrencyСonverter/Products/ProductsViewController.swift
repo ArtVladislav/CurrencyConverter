@@ -8,7 +8,7 @@
 import UIKit
 
 protocol ProductsViewProtocol: AnyObject {
-    func update(model: [ProductsModel])
+    func update(model: [ProductsDomainLayer])
     func startLoader()
     func stopLoader()
 }
@@ -17,7 +17,7 @@ final class ProductsViewController: UIViewController, UITableViewDelegate, UITab
     
     private var tableView: UITableView
     private let presenter: ProductsPresenterProtocol
-    private var model: [ProductsModel]?
+    private var model: [ProductsDomainLayer]?
     private var activityIndicator: UIActivityIndicatorView!
     
     init(presenter: ProductsPresenterProtocol) {
@@ -66,7 +66,7 @@ extension ProductsViewController: ProductsViewProtocol {
         activityIndicator.stopAnimating()
     }
     
-    func update(model: [ProductsModel]) {
+    func update(model: [ProductsDomainLayer]) {
         self.model = model
         DispatchQueue.main.async {
             self.tableView.reloadData()
