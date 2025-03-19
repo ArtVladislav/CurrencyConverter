@@ -27,8 +27,9 @@ struct RatesModel: Decodable {
     let rate: String
 }
 
-struct TransactionsModel: Decodable {
+struct TransactionsModel: Equatable {
     let currency: String
     let amount: Double
     let finalTargetCurrency: Double
+    
 }
