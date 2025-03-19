@@ -12,12 +12,12 @@ final class ConverterTest: XCTestCase {
 
     var converter: CurrencyConverter!
     var model: [TransactionsProduct]!
-    var rates: [RatesModel]!
+    var rates: [RatesDataLayer]!
     
     override func setUpWithError() throws {
         converter = CurrencyConverter()
         model = [TransactionsProduct(currency: "USD", amount: 55.5), TransactionsProduct(currency: "AUD", amount: 100)]
-        rates = [RatesModel(from: "USD", to: "GBP", rate: "0.7"),RatesModel(from: "AUD", to: "USD", rate: "12")]
+        rates = [RatesDataLayer(from: "USD", to: "GBP", rate: "0.7"),RatesDataLayer(from: "AUD", to: "USD", rate: "12")]
     }
 
     override func tearDownWithError() throws {
@@ -32,14 +32,14 @@ final class ConverterTest: XCTestCase {
     
     func testConverter() {
         let expectation = XCTestExpectation(description: "Асинхронный вызов завершен")
-        converter.getDomainLayerTransactions(transactions: model, rates: rates) { (result: Result<[TransactionsModel], CustomError>) in
+        converter.getDomainLayerTransactions(transactions: model, rates: rates) { (result: Result<[TransactionsDomainLayer], CustomError>) in
             switch result {
             case .success(let value):
                 
                 XCTAssertFalse(value.isEmpty, "Массив транзакций пуст")
             
-                XCTAssertEqual(value, [TransactionsModel(currency: "USD", amount: 55.5, finalTargetCurrency: 38.849999999999994),
-                                       TransactionsModel(currency: "AUD", amount: 100.0, finalTargetCurrency: 840.0)])
+                XCTAssertEqual(value, [TransactionsDomainLayer(currency: "USD", amount: 55.5, finalTargetCurrency: 38.849999999999994),
+                                       TransactionsDomainLayer(currency: "AUD", amount: 100.0, finalTargetCurrency: 840.0)])
                 
             case .failure(let error):
                 XCTFail("\(error)")
