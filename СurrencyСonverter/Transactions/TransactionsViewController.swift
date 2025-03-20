@@ -104,10 +104,10 @@ extension TransactionsViewController: TransactionsViewProtocol {
         tableView.backgroundColor = .white
         tableView.rowHeight = 50
         tableView.allowsSelection = false
-        view.addSubview(tableView)
         tableView.register(TransactionsCell.self, forCellReuseIdentifier: TransactionsCell.cellId)
         tableView.delegate = self
         tableView.dataSource = self
+        view.addSubview(tableView)
     }
     
     private func setupConstraints() {
