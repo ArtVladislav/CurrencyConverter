@@ -21,7 +21,7 @@ final class CurrencyConverter: CurrencyConverterProtocol {
                 }
                 return
             }
-            DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 completion(.success(model))
             }
         }

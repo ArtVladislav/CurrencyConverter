@@ -31,5 +31,4 @@ struct TransactionsDomainLayer: Equatable {
     let currency: String
     let amount: Double
     let finalTargetCurrency: Double
-    
 }
